@@ -5,7 +5,7 @@ const validatorModule = require("../validator/formatter")
 
 const router = express.Router();
 
-router.get('/test-me',function(req, re){
+router.get('/test-me',function(req, res){
     res.send("This is my first node.js Assignment")
     externalModule.welcome()
     helperModule.printDate()
