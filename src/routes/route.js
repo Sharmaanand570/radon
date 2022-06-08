@@ -1,18 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const bookController = require("../controller/bookController")
+const Controller = require("../controller/Controller")
 
-router.post('/createBook', bookController.createBook)
+router.post('/createBook', Controller.createBook)
 
-router.get('/bookList', bookController.bookList)
+router.post('/createAuthor',Controller.createAuthor)
 
-router.post('/getBooksInYear/:Year', bookController.getBooksInYear)
+router.get('/listChetanBhagatBooks', Controller.listChetanBhagatBooks)
 
-router.post('/getParticularBooks', bookController.getParticularBooks)
+router.get('/findAuthorOfTwoStates', Controller.findAuthorOfTwoStates)
 
-router.get('/getXINRBooks', bookController.getXINRBooks)
-
-router.get('/getRandomBooks', bookController.getRandomBooks)
+router.get('/findAuthorByBooksCosts50to100', Controller.findAuthorByBooksCosts50to100)
 
 module.exports = router;
 // adding this comment for no reason
