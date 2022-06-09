@@ -52,14 +52,14 @@ const findAuthorOfTwoStates = async function(req, res){
     }).select({author_name:1,_id:0})
     
     let price = updateData.price
-    res.send({msg: authorData,price})
+    res.send({msg:authorData,price})
 }
 
 const findAuthorByBooksCosts50to100 = async function(req, res){
     let booksAuthorId = await booksModel.find({
         price:{
             $gte:50, 
-            $lt:100
+            $lte:100
         }
     }).select({author_id:1,_id:0})
     let authorId = booksAuthorId.map(a => a.author_id)
@@ -71,14 +71,46 @@ const findAuthorByBooksCosts50to100 = async function(req, res){
             author_name:1,
             _id:0
         })
-        authorName.push(author)
+        authorName.push(...author)
     }
     res.send({msg: authorName})
 }
 
+const booksByAuthorid = async function(req, res){
+    let authorId = req.params.id
+    let Books = await booksModel.find({author_id:authorId}).select({name:1,_id:0})
+    res.send({msg:Books})
+}
+
+const authorOlderThan50 = async function(req, res){
+    let author50plus = await authorsModel.find({
+        age:{
+            $gt:50
+        }}).select({author_id:1,_id:0})
+
+    let bookRating = []    
+    for(i=0;i<author50plus.length;i++){
+        bookRating.push(...await booksModel.find({
+            author_id:author50plus[i].author_id,
+            ratings:{
+                $gt:4
+            }}).select({author_id:1,_id:0}))
+    }
+    let authorNameAndAge = []
+    for(j=0;j<bookRating.length;j++){
+        authorNameAndAge.push(...await authorsModel.find({
+            author_id:bookRating[j].author_id}).select({
+                author_name:1,
+                age:1,
+                _id:0}))
+    }
+    res.send({msg:authorNameAndAge})
+}
 
 module.exports.createBook = createBook
 module.exports.createAuthor = createAuthor
 module.exports.listChetanBhagatBooks = listChetanBhagatBooks
 module.exports.findAuthorOfTwoStates = findAuthorOfTwoStates
 module.exports.findAuthorByBooksCosts50to100 = findAuthorByBooksCosts50to100
+module.exports.booksByAuthorId = booksByAuthorid
+module.exports.authorOlderThan50 = authorOlderThan50
