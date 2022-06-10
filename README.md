@@ -23,6 +23,7 @@ Optional Problems
 - DATA:
 
 // _id:ObjectId("8781263871293"), _id will be automatically generated
+
 - Authors:
     {    
 
@@ -32,12 +33,14 @@ Optional Problems
         address:"New delhi"
     } ,
     { 
+    
         author_id:2,
         author_name:"J.k Rowling",
         age:60,
         address:"Britain"
     } ,
     {    
+    
         author_id:3,
         author_name:"Ramanujan",
         age:100,
@@ -48,6 +51,7 @@ Optional Problems
 
 - Books:
     { 
+    
         name:"Two states",
         author_id:1,
         price:50,
@@ -56,30 +60,35 @@ Optional Problems
 
 
     { 
+    
         name:"Five Point Someone",
         author_id:1,
         price:50,
         ratings:4.5,
     } ,
     { 
+    
         name:"The 3 Mistakes of My Life",
         author_id:1,
         price:50,
         ratings:4.5,
     } ,
     { 
+    
         name:"One Arranged Murder",
         author_id:1,
         price:50,
         ratings:4.5,
     } ,
     { 
+    
         name:"Harry Porter",
         author_id:2,
         price:50,
         ratings:4.5,
     } ,
     { 
+    
         name:"Harry Porter",
         author_id:2,
         price:50,
