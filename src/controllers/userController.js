@@ -3,80 +3,103 @@ const userModel = require("../models/userModel.js")
 
 //creating user data
 const createUser = async function (req, res){
-  let data = req.body
-  let savedData = await userModel.create(data)
-  res.send({msg: savedData})
+  try{
+    let data = req.body
+    let savedData = await userModel.create(data)
+    res.status(201).send({msg: savedData})
+  }
+  catch(error){
+    res.status(500).send({msg:"Error :", Error : error.message})
+  }
 }
 
 //login and making token and verifying
 const loginUser = async function(req, res){
-  let userName = req.body.emailId
-  let password = req.body.password
-  // const {userName,password} = req.body
-
-  const user = await userModel.findOne({emailId:userName,password})
-  if(!user){
-    res.send({status:false, msg:"username or the password is not corerct"})
-  }
-  else{
-    let token = jwt.sign({userId:user._id.toString(),
+  try{
+    let userName = req.body.emailId
+    let password = req.body.password
+    // const {userName,password} = req.body
+    const user = await userModel.findOne({emailId:userName,password})
+    if(!user){
+      res.status(404).send({status:false, msg:"username or the password is not corerct"})
+    }
+    else{
+      let token = jwt.sign({userId:user._id.toString(),
                           batch: "radon",
                           organisation:"FunctionUp"
-    },"functionUp-radon")
-    res.setHeader("x-auth-token", token);
-    res.send({ status: true, token: token })
+      },"functionUp-radon")
+      res.status(201).setHeader("x-auth-token", token);
+      res.status(201).send({ status: true, token: token })
+    }
+  }
+  catch(error){
+    res.status(500).send({msg:"Error :", Error : error.message})
   }
 }
 
 //see user data by authenticate and authorise
 let getUserData = async function(req, res){
-  let token = req.headers["x-auth-token"]
-  if(!token){
-      res.send({status: false, msg: "token must be present"})
-  }
-  else{
-    console.log(token)
-    let decodedToken = jwt.verify(token, "functionUp-radon")
-    if (!decodedToken){
-      res.send({ status: false, msg: "token is invalid" })
+  try{
+    let token = req.headers["x-auth-token"]
+    if(!token){
+      res.status(404).send({status: false, msg: "token must be present"})
     }
     else{
-      let userId = req.params.userId;
-      let userDetails = await userModel.findById(userId)
-      if(!userDetails){
-        res.send({ status: false, msg: "No such user exists" })
-      }
-      else{
-        if(userId===decodedToken.userId){
-          res.send({ status: true, data: userDetails })
+      console.log(token)
+      try{
+        const decodedToken = jwt.verify(token, "functionUp-radon")
+        try{
+          let userId = req.params.userId
+          let userDetails = await userModel.findById(userId)
+          if(userId===decodedToken.userId){
+            res.status(200).send({ status: true, data: userDetails })
+          }
+          else{
+            res.status(401).send("User not valid")
+          } 
         }
-        else{
-          res.send("User not valid")
-        } 
-      } 
+        catch(error){
+          res.status(404).send({ msg:"Error", Error: error.message })
+        }
+      }
+      catch(error){
+        res.status(406).send({ msg:"Error", Error:error.message})
+      }
     }
+  }
+  catch(error){
+    res.status(500).send({msg:"Error :", Error : error.message})
   }
 }
 
 //update user detail
 const updateUser = async function(req, res){
-  let userData = req.body
-  let userId = req.params.userId
-  let updatedUser = await userModel.findOneAndUpdate({ _id: userId }, userData,{new:true})
-  res.send({ status: true, data: updatedUser })
-
+  try{
+    let userData = req.body
+    let userId = req.params.userId
+    let updatedUser = await userModel.findOneAndUpdate({ _id: userId }, userData,{new:true})
+    res.status(202).send({ status: true, data: updatedUser })
+  }
+  catch(error){
+    res.status(500).send({msg:"Error :", Error : error.message})
+  }
 }
 
 //delete user or isDeleted to true
 const deleteUser = async function(req, res){
-  let userId = req.params.userId
-  let userDetails = await userModel.findById(userId)
-  if(userDetails.isDeleted == true){
-    res.send("Data is already deleted")
+  try{
+    let userId = req.params.userId
+    let userDetails = await userModel.findById(userId)
+    if(userDetails.isDeleted == true){
+      res.status(208).send("Data is already deleted")
+    }
+    else{
+      await userModel.findByIdAndUpdate({_id:userId},{isDeleted:true},{new:true})
+      res.status(202).send("user deleted")
+    }
   }
-  else{
-    await userModel.findByIdAndUpdate({_id:userId},{isDeleted:true},{new:true})
-    res.send("user deleted")
+  catch(error){
+    res.status(500).send({msg:"Error :", Error : error.message})
   }
 }
 
